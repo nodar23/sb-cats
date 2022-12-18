@@ -1,0 +1,13 @@
+h1 {
+    font-family: 'Franklin Gothic Medium';
+    color: rgb(31, 116, 116);
+    text-align: center;
+    margin-top: 50px;
+}
+
+.container {
+
+    justify-content: center;
+    flex-wrap: wrap;
+
+}
