@@ -1,6 +1,9 @@
 console.log("work");
 
-const $wr = document.querySelector('[data-wr]');
+const $wr = document.querySelector('[data-wr]')
+const $createCatForm = document.forms.createCatForm
+const $modalWr = document.querySelector('[data-modalWr]')
+const $modalContent = document.querySelector('[data-modalContent]')
 
 const ACTIONS = {
     MORE: 'more',
@@ -54,3 +57,65 @@ $wr.addEventListener('click', (e) => {
     }
 })
 
+const submitCreateCatHandler = (e) => {
+    e.preventDefault()
+
+    let formDataObject = Object.fromEntries(new FormData(e.target).entries())
+
+    formDataObject = {
+        ...formDataObject,
+        id: Number(formDataObject.id),
+        rate: Number(formDataObject.rate),
+        age: Number(formDataObject.age),
+        favorite: Boolean(formDataObject.favorite)
+    }
+
+    fetch('https://cats.petiteweb.dev/api/single/nodar23/add/', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formDataObject)
+    }).then((res) => {
+        if (res.status === 200) {
+            return $wr.insertAdjacentHTML(
+                'afterbegin',
+                getCatHTML(formDataObject),
+            )
+        }
+        throw Error('Ошибка при создании кота')
+    }).catch(alert)
+}
+
+const clickModalWrHaldler = (e) => {
+    if (e.target === $modalWr) {
+        $modalWr.classList.add('hidden')
+        $modalWr.removeEventListener('click', clickModalWrHaldler)
+        $createCatForm.removeEventListener('submit', submitCreateCatHandler)
+    }
+}
+
+const openModalHandler = (e) => {
+    const targetModalName = e.target.dataset.openmodal
+    if (targetModalName === 'createCat') {
+        $modalWr.classList.remove('hidden')
+        $modalWr.addEventListener('click', clickModalWrHaldler)
+
+
+        $createCatForm.addEventListener('submit', submitCreateCatHandler)
+    }
+}
+
+document.addEventListener('click', openModalHandler)
+
+
+document.addEventListener('keydown', (e) => {
+    console.log(e)
+
+    if (e.key === 'Escape') {
+        $modalWr.classList.add('hidden')
+        $modalWr.removeEventListener('click', clickModalWrHaldler)
+        $createCatForm.removeEventListener('submit', submitCreateCatHandler)
+
+    }
+})
